@@ -3,7 +3,9 @@ const sequelize = require('./db')
 
 const User = sequelize.define('User', {
     id: {
-        type: DataTypes.DECIMAL
+        type: DataTypes.DECIMAL,
+        autoIncrement: true,
+        primaryKey: true,
     },
     email: {
         type: DataTypes.STRING
@@ -14,7 +16,7 @@ const User = sequelize.define('User', {
     lastName: {
         type: DataTypes.STRING
     },
-    isActive:{
+    isActive: {
         type: DataTypes.BOOLEAN
     },
     phoneNumber: {
@@ -30,7 +32,8 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    tableName: 'User'
 })
 
 module.exports = User
