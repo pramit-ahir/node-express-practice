@@ -43,4 +43,24 @@ function loginValidation(req, res, next) {
     next()
 }
 
-module.exports = { addUserValidation, loginValidation }
+function updateUserValidation(req, res, next) {
+    const update = Joi.object({
+        firstName: Joi.string().min(2).max(50),
+        lastName: Joi.string().min(2).max(50),
+        phoneNumber: Joi.string()
+            .pattern(/^\+?[1-9]\d{1,14}$/),
+        birthDate: Joi.date().optional(),
+        gender: Joi.string().valid('male', 'female', 'other'),
+    })
+    const { error } = update.validate(req.body, { abortEarly: false })
+    if (error) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'validation error',
+            details: error.details.map((err) => err.message),
+        })
+    }
+    next()
+}
+
+module.exports = { addUserValidation, loginValidation, updateUserValidation }

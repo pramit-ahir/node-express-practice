@@ -38,16 +38,49 @@ async function loginUser(req, res) {
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRATION }
         )
-
-        res.json({
+         res.json({
             message: 'Login successful',
             token,
             user: { id: isExist.id, email: isExist.email }
         })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "error while login" })
     }
 }
 
-module.exports = { addUser, loginUser }
+async function updateUser(req, res) {
+    try {
+        const id = req.user.id
+        let firstName = req.body.firstName
+        let lastName = req.body.lastName
+        let phoneNumber = req.body.phoneNumber
+        let birthDate = req.body.birthDate
+        let gender = req.body.gender
+        const updateData = {}
+        if (firstName) {
+            updateData.firstName = firstName
+        }
+        if (lastName) {
+            updateData.lastName = lastName
+        }
+        if (phoneNumber) {
+            updateData.phoneNumber = phoneNumber
+        }
+        if (birthDate) {
+            updateData.birthDate = birthDate
+        }
+        if (gender) {
+            updateData.gender = gender
+        }
+        await User.update(
+            updateData, { where: { id } }
+        )
+        res.json({ message: 'user updated successfully' })
+
+    } catch (error) {
+        res.status(500).json({ message: "error while update" })
+
+    }
+}
+
+module.exports = { addUser, loginUser, updateUser }
