@@ -27,4 +27,20 @@ function addUserValidation(req, res, next) {
     next()
 }
 
-module.exports = { addUserValidation }
+function loginValidation(req, res, next) {
+    const login = Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string().required()
+    })
+    const { error } = login.validate(req.body, { abortEarly: false })
+    if (error) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'validation error',
+            details: error.details.map((err) => err.message),
+        })
+    }
+    next()
+}
+
+module.exports = { addUserValidation, loginValidation }
