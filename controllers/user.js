@@ -38,7 +38,7 @@ async function loginUser(req, res) {
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRATION }
         )
-         res.json({
+        res.json({
             message: 'Login successful',
             token,
             user: { id: isExist.id, email: isExist.email }
@@ -83,4 +83,16 @@ async function updateUser(req, res) {
     }
 }
 
-module.exports = { addUser, loginUser, updateUser }
+async function getUser(req, res) {
+    try {
+        let id = req.user.id
+        const user = await User.findOne({ where: { id } })
+        delete user.dataValues.password
+        delete user.dataValues.updatedAt
+        res.json(user)
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong while fetching the user" })
+    }
+}
+
+module.exports = { addUser, loginUser, updateUser, getUser }
