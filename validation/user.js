@@ -63,4 +63,23 @@ function updateUserValidation(req, res, next) {
     next()
 }
 
-module.exports = { addUserValidation, loginValidation, updateUserValidation }
+function userListValidation(req, res, next) {
+    const userList = Joi.object({
+        email: Joi.string(),
+        gender: Joi.string().valid('male', 'female', 'other'),
+        page: Joi.number(),
+        limit: Joi.number()
+    })
+
+    const { error } = userList.validate(req.query, { abortEarly: false });
+    if (error) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Validation error',
+            details: error.details.map((err) => err.message),
+        })
+    }
+    next()
+}
+
+module.exports = { addUserValidation, loginValidation, updateUserValidation, userListValidation }

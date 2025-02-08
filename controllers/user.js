@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const User = require('./../models/user')
 const jwt = require('jsonwebtoken')
+const { Op } = require("sequelize")
 
 
 async function addUser(req, res) {
@@ -95,4 +96,32 @@ async function getUser(req, res) {
     }
 }
 
-module.exports = { addUser, loginUser, updateUser, getUser }
+async function getUsers(req, res) {
+    try {
+        let page = req.query.page || 1
+        let limit = req.query.limit || 10
+        let gender = req.query.gender
+        let email = req.query.email
+        page = parseInt(page)
+        limit = parseInt(limit)
+        const offset = (page - 1) * limit
+        const query = {}
+        if (gender) {
+            query.gender = gender
+        }
+        if (email) {
+            query.email = { [Op.like]: `%${email}%` }
+        }
+        const totalUsers = await User.count({ where: query })
+
+        const users = await User.findAll({
+            where: query, limit, offset,
+            attributes: ["id", "email", "firstName", "lastName", "gender", "birthDate", "phoneNumber"]
+        })
+        res.json({ data: users, count: totalUsers })
+    } catch (err) {
+        res.status(500).json({ message: "something went wrong while fetching the users" })
+    }
+}
+
+module.exports = { addUser, loginUser, updateUser, getUser, getUsers }
