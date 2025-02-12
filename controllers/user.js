@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const User = require('./../models/user')
 const jwt = require('jsonwebtoken')
 const { Op } = require("sequelize")
+const Address = require('../models/address')
 
 
 async function addUser(req, res) {
@@ -90,6 +91,10 @@ async function getUser(req, res) {
         const user = await User.findOne({ where: { id } })
         delete user.dataValues.password
         delete user.dataValues.updatedAt
+        const address = await Address.findOne({ where: { userId: id },
+        "attributes":["street", "postalCode", "country", "city","state"] })
+        user.dataValues.address = address
+
         res.json(user)
     } catch (error) {
         res.status(500).json({ message: "something went wrong while fetching the user" })
