@@ -11,6 +11,19 @@ async function addUserAddress(req, res) {
     }
 }
 
+async function getUserAddress(req, res) {
+    try {
+        let id = req.user.id
+        const userAddress = await Address.findAll({
+            where: { userId: id },
+            attributes: ["id", "street", "postalCode", "country", "city", "state"]
+        })
+        res.json({ data: userAddress })
+    } catch (err) {
+        res.status(500).json({ message: 'error while fetching user address' })
+    }
+}
 
 
-module.exports = { addUserAddress }
+
+module.exports = { addUserAddress, getUserAddress }
